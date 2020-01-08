@@ -10,9 +10,6 @@ public class WordNet {
         Map<String, String> synsets_hm = w.parseSynsets(synsets_file);
         System.out.println();
         Map<String, String> hypersets_hm = w.parseHypernyms(hypernyms_file);
-
-        System.out.println(synsets_hm.get("99"));
-        System.out.println(hypersets_hm.get("99"));
     } 
 
     private Map parseSynsets(String filename) throws FileNotFoundException, IOException {
@@ -20,16 +17,14 @@ public class WordNet {
         BufferedReader br = new BufferedReader(new FileReader(read_synsets)); 
         Map<String, String> synsets_hashmap = new HashMap<>();
         String st;
-        // int i = 0;
+        int w_count = 0;
         while ((st = br.readLine()) != null) {
-            // if (i == 5) break;
             String[] data = st.split(",");
             synsets_hashmap.put(data[0], data[1]);
-            // i++;
-            // for (int j = 0; j < data.length; j++)
-            //     System.out.println(data[j]);
+            w_count++;
         } 
         // System.out.println(synsets_hashmap);
+        System.out.println(w_count);
         return synsets_hashmap;
     }
 
@@ -38,16 +33,17 @@ public class WordNet {
         BufferedReader br = new BufferedReader(new FileReader(read_hypernyms)); 
         Map<String, String> hypernyms_hashmap = new HashMap<>();
         String st;
-        int i = 0;
+        int w_count = 0;
         while ((st = br.readLine()) != null) {
-            // if (i == 100) break;
-            String[] data = st.split(",",2);
-            hypernyms_hashmap.put(data[0], data[1]);
-            // i++;
-            // for (int j = 0; j < data.length; j++)
-            //     System.out.println(data[j]);
+            String[] data = st.split(",");            
+            w_count++;
+            for (int j = 0; j < data.length; j+= 2)
+                for(int k = 1; k < data.length; k+= 2)
+                hypernyms_hashmap.put(data[j], data[k]);
+                
         } 
         // System.out.println(hypernyms_hashmap);
+        System.out.println(w_count);
         return hypernyms_hashmap;
     }
 }
