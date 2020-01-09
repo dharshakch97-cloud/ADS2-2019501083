@@ -16,7 +16,7 @@ public class Digraph {
     private int E; // number of edges in this digraph
     private Bag<Integer>[] adj; // adj[v] = adjacency list for vertex v
     private int[] indegree; // indegree[v] = indegree of vertex v
-
+    
     /**
      * Initializes an empty digraph with <em>V</em> vertices.
      *

@@ -7,9 +7,9 @@ public class SAP {
     Digraph digraph;
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
-        // if (G == null) {
-        //     throw IllegalArgumentException("Graph is null");
-        // }
+        if (G == null) {
+            throw IllegalArgumentException("Graph is null");
+        }
         digraph = new Digraph(G);
     }
  
@@ -19,7 +19,7 @@ public class SAP {
             throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
         }
     }
-
+ 
     private void validateVertices(Iterable<Integer> vertices) {
         if (vertices == null) {
             throw new NullPointerException("argument is null");
