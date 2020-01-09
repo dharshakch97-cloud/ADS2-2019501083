@@ -1,10 +1,16 @@
+/** 
+ * @author Dharshak
+ * 
+ * This SAP class used to find the shortest path between the given 
+ * two vertices and find the shortest ancestor path between the them
+*/
 import java.util.*;
 import java.lang.*;
 import java.io.*;
 
 public class SAP {
 
-    Digraph digraph;
+    Digraph digraph; // Digraph object creation 'digraph' 
     // constructor takes a digraph (not necessarily a DAG)
     public SAP(Digraph G) {
         // if (G == null) {
@@ -12,7 +18,15 @@ public class SAP {
         // }
         digraph = new Digraph(G);
     }
- 
+
+    /** 
+     * @param v integer
+     *
+     * This method checks the vertex is valid vertex
+     * in the graph or not
+     * If vertex in the graph is not valid, throws 'InexOutOfBoundsException'
+     * and displays 'vertex is not between 0 and total vertices' 
+    */
     private void validVertex(int v) {
         int V = digraph.V();
         if (v < 0 && v >= V) {
@@ -20,6 +34,14 @@ public class SAP {
         }
     }
  
+    /** 
+     * @param vertices Iterable<Integer>
+     * 
+     * This method checks the Iterable of vertices 
+     * are valid or not
+     * If vertex in the graph is not valid, throws 'InexOutOfBoundsException'
+     * and displays 'vertex is not between 0 and total vertices' 
+    */
     private void validVertices(Iterable<Integer> vertices) {
         if (vertices == null) {
             throw new NullPointerException("argument is null");
@@ -32,16 +54,26 @@ public class SAP {
         }
     }
 
-    // return shortest length and corresponding ancestor
+    /** 
+     * @param v integer
+     * @param w integer
+     *
+     * This method 'shortest' used to find 
+     * return the shortest length between 
+     * two vertices and its corresponding 
+     * common ancestor
+    */
     private int[] shortest(int v, int w) {
-        validVertex(v);
-        validVertex(w);
+        validVertex(v); // validating the vertex v
+        validVertex(w); // validating the vertex v
         int[] res = new int[2];
-        BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(digraph, v);
-        BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(digraph, w);
+        BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(digraph, v); // bfs for v vertex
+        BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(digraph, w); // bfs for v vertex
         
-        int shortest_Len = Integer.MAX_VALUE;
-        int shortest_Ancestor = -1;
+        int shortest_Len = Integer.MAX_VALUE; // stores Integer MAX_VALUE as default
+        int shortest_Ancestor = -1; // stores -1 as default
+        // checking for the paths for both of the vertices and finding the length of both the paths
+        // Then, if it is shortest length update the shortest_Len and the vertex 'i' as the common ancestor 
         for (int i = 0; i < digraph.V(); ++i) {
             if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) {
                 int len = bfsv.distTo(i) + bfsw.distTo(i);
@@ -51,7 +83,9 @@ public class SAP {
                 }
             }
         }
-        
+        // if the shortest_Ancestor is -1, it has no path
+        // So, update shortest_Len and shortest_Ancestor as -1
+        // Or else, update its actual shortest_Len and shortest_Ancestor
         if (shortest_Ancestor == -1) {
             res[0] = -1;
             res[1] = -1;
@@ -60,21 +94,31 @@ public class SAP {
             res[0] = shortest_Len;
             res[1] = shortest_Ancestor;
         }
-        return res;
+        return res; // returns the shortest_Len and shortest_Ancestor as a array
     }
 
-    // return shortest length and corresponding ancestor
+    /** 
+     * @param v Iterable integer
+     * @param w Iterable integer
+     *
+     * This method 'shortest' used to find 
+     * return the shortest length between 
+     * two vertices and its corresponding 
+     * common ancestor
+    */
     private int[] shortest(Iterable<Integer> v, Iterable<Integer> w) {
-        validVertices(v);
-        validVertices(w);
+        validVertices(v); // validating the vertex v
+        validVertices(w); // validating the vertex w 
         int[] res = new int[2];
-        BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(digraph, v);
-        BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(digraph, w);
+        BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(digraph, v); // bfs for v vertex
+        BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(digraph, w); // bfs for w vertex
         
-        int shortest_Len = Integer.MAX_VALUE;
-        int shortest_Ancestor = -1;
+        int shortest_Len = Integer.MAX_VALUE; // stores Integer MAX_VALUE as default
+        int shortest_Ancestor = -1; // stores -1 as deault
+        // checking for the paths for both of the vertices and finding the length of both the paths
+        // Then, if it is shortest length update the shortest_Len and the vertex 'i' as the common ancestor 
         for (int i = 0; i < digraph.V(); ++i) {
-            if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) {
+            if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) { 
                 int len = bfsv.distTo(i) + bfsw.distTo(i);
                 if (len < shortest_Len) {
                     shortest_Len = len;
@@ -82,7 +126,9 @@ public class SAP {
                 }
             }
         }
-        
+        // if the shortest_Ancestor is -1, it has no path
+        // So, update shortest_Len and shortest_Ancestor as -1
+        // Or else, update its actual shortest_Len and shortest_Ancestor
         if (shortest_Ancestor == -1) {
             res[0] = -1;
             res[1] = -1;
@@ -91,28 +137,52 @@ public class SAP {
             res[0] = shortest_Len;
             res[1] = shortest_Ancestor;
         }
-        return res;
+        return res; // returns the shortest_Len and shortest_Ancestor as a array
     }
 
-    // length of shortest ancestral path between v and w; -1 if no such path
+    /** 
+     * @param v integer 
+     * @param w integer
+     *
+     * To find the length of shortest ancestral path between v and w
+     * if no such path, returns -1 
+    */
     public int length(int v, int w) {
         int[] result = shortest(v, w);
         return result[0];
     }
  
-    // a common ancestor of v and w that participates in a shortest ancestral path; -1 if no such path
+    /** 
+     * @param v integer 
+     * @param w integer
+     *
+     * To find the common ancestor of v and w that present in a shortest ancestral path
+     * if no such path, returns -1
+    */
     public int ancestor(int v, int w) {
         int[] result = shortest(v, w);
         return result[1];
     }
  
-    // length of shortest ancestral path between any vertex in v and any vertex in w; -1 if no such path
+    /** 
+     * @param v An Iterable integer 
+     * @param w An Iterable integer
+     *
+     * To find the length of shortest ancestral path between v and w
+     * if no such path, returns -1 
+    */
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
         int[] result = shortest(v, w);
         return result[0];
     }
  
-    // a common ancestor that participates in shortest ancestral path; -1 if no such path
+    /** 
+     * @param v An Iterable integer 
+     * @param w An Iterable integer
+     *
+     * To find the common ancestor of v and w that present in a shortest ancestral path
+     * if no such path, returns -1
+    */
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
         int[] result = shortest(v, w);
         return result[1];
