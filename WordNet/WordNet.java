@@ -1,24 +1,29 @@
+import edu.princeton.cs.algs4.LinearProbingHashST;
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.DirectedCycle;
+import edu.princeton.cs.algs4.In;
+
+import java.util.ArrayList;
+
 /**
  * @author Dharshak
  * 
  * WordNet class and integrate Digraph class for adding edges 
- * and display the count of Vertices and Edges
+ * and display the count of Vertices and Edges, reading the synsets and 
+ * hypernets files and implementations for isNoun, distance, and sap methods
  */
-
-import java.util.*;
-import java.io.*;
 public class WordNet {
 
     private LinearProbingHashST<String, ArrayList<Integer>> htable;
     private LinearProbingHashST<Integer, String> htable1;
    
-    int v;
-    SAP sap;
-    In in;
-    Digraph d;
+    private int v;
+    private SAP sap;
+    private In in;
+    private Digraph d;
 
    // constructor takes the name of the two input files
-   public WordNet(String synsets, String hypernyms) throws Exception {
+   public WordNet(String synsets, String hypernyms) {
         if (synsets == null || hypernyms == null) {
             throw new IllegalArgumentException("File name is null");
         }
@@ -27,14 +32,14 @@ public class WordNet {
         readHypernyms(hypernyms);
     }
 
-    private void readSynsets(String synsets) throws Exception {
+    private void readSynsets(String synsets) {
         htable = new LinearProbingHashST<String, ArrayList<Integer>>();
         htable1 = new LinearProbingHashST<Integer, String>();
 
-        Scanner scanSyn = new Scanner(new File(synsets));
-        while (scanSyn.hasNextLine()) {
+        In in = new In(synsets);
+        while (in.hasNextLine()) {
             v++;
-            String[] str = scanSyn.nextLine().split(",");
+            String[] str = in.readLine().split(",");
             int id = Integer.parseInt(str[0]);
             htable1.put(id, str[1]);
 
@@ -56,14 +61,14 @@ public class WordNet {
         // System.out.println(htable1);
     }
 
-    private void readHypernyms(String hypernyms) throws Exception {
+    private void readHypernyms(String hypernyms) {
 
         ArrayList<String> h_id = new ArrayList<String>();
         ArrayList<String[]> h_con = new ArrayList<String[]>();
 
-        Scanner scanHyp = new Scanner(new File(hypernyms));
-        while(scanHyp.hasNextLine()) {
-            String[] str = scanHyp.nextLine().split(",",2);
+        In in = new In(hypernyms);
+        while(in.hasNextLine()) {
+            String[] str = in.readLine().split(",",2);
             if (str.length > 1) {
                 h_id.add(str[0]);
                 h_con.add(str[1].split(","));
@@ -87,6 +92,20 @@ public class WordNet {
                     int d2 = Integer.parseInt(h_con.get(i)[j]);
                     d.addEdge(d1, d2);
                     e++;
+                }
+            }
+        }
+
+        DirectedCycle dc = new DirectedCycle(d);
+        if (dc.hasCycle()) {
+            throw new IllegalArgumentException("Cycle detected");
+        }
+        int numRoot = 0;
+        for (int i = 0; i < d.V(); ++i) {
+            if (d.outdegree(i) == 0) {
+                ++numRoot;
+                if (numRoot > 1) {
+                    throw new IllegalArgumentException("More than 1 root");
                 }
             }
         }
@@ -124,40 +143,6 @@ public class WordNet {
         }  
         return htable1.get(sap.ancestor(htable.get(nounA), htable.get(nounB)));
    }
-}
    // do unit testing of this class
    // public static void main(String[] args)  throws Exception {
-   //      In in = new In("digraph1.txt");
-   //      Digraph dg = new Digraph(in);
-   //      SAP sap_dg = new SAP(dg);
-
-   //      System.out.println("length = " + sap_dg.length(3, 11) +  ", Ancestor = " + sap_dg.ancestor(3, 11));
-   //      System.out.println("length = " + sap_dg.length(9, 12) +  ", Ancestor = " + sap_dg.ancestor(9, 12));
-   //      System.out.println("length = " + sap_dg.length(7, 2) +  ", Ancestor = " + sap_dg.ancestor(7, 2));
-   //      System.out.println("length = " + sap_dg.length(1, 6) +  ", Ancestor = " + sap_dg.ancestor(1, 6));
-
-   //      String syn = "synsets.txt";
-   //      String hyp = "hypernyms.txt";
-
-   //      WordNet w = new WordNet(syn, hyp);
-   //      // System.out.println(w.nouns());
-   //      System.out.println(w.isNoun("Agamidae"));
-
-   //      // System.out.println(sap.length(a, b));
-   //      System.out.println("Pair 1: ");
-   //      System.out.println(w.distance("1830s", "1840s"));
-   //      System.out.println(w.sap("1830s", "1840s"));
-
-   //      System.out.println("Pair 2: ");
-   //      System.out.println(w.distance("Achras", "genus_Achras"));
-   //      System.out.println(w.sap("Achras", "genus_Achras"));
-
-   //      System.out.println("Pair 3: ");
-   //      System.out.println(w.distance("Actinidia", "genus_Actinidia"));
-   //      System.out.println(w.sap("Actinidia", "genus_Actinidia"));
-
-   //      System.out.println("Pair 4: ");
-   //      System.out.println(w.distance("Adams", "Robert_Adam"));
-   //      System.out.println(w.sap("Adams", "Robert_Adam"));
-   //  }
-// }
+ }

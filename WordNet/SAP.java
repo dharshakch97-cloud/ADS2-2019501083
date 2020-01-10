@@ -1,24 +1,15 @@
+import edu.princeton.cs.algs4.Digraph;
+import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
+
 /** 
  * @author Dharshak
  * 
  * This SAP class used to find the shortest path between the given 
  * two vertices and find the shortest ancestor path between the them
 */
-import java.util.*;
-import java.lang.*;
-import java.io.*;
-
 public class SAP {
 
-    Digraph digraph; // Digraph object creation 'digraph' 
-    // constructor takes a digraph (not necessarily a DAG)
-    public SAP(Digraph G) {
-        // if (G == null) {
-        //     throw IllegalArgumentException("Graph is null");
-        // }
-        digraph = new Digraph(G);
-    }
-
+    private Digraph digraph; // Digraph object creation 'digraph'
     /** 
      * @param v integer
      *
@@ -33,7 +24,6 @@ public class SAP {
             throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
         }
     }
- 
     /** 
      * @param vertices Iterable<Integer>
      * 
@@ -52,7 +42,7 @@ public class SAP {
                 throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
             }
         }
-    }
+    } 
 
     /** 
      * @param v integer
@@ -140,6 +130,14 @@ public class SAP {
         return res; // returns the shortest_Len and shortest_Ancestor as a array
     }
 
+    // constructor takes a digraph (not necessarily a DAG)
+    public SAP(Digraph G) {
+        // if (G == null) {
+        //     throw IllegalArgumentException("Graph is null");
+        // }
+        digraph = new Digraph(G);
+    }
+
     /** 
      * @param v integer 
      * @param w integer
@@ -147,6 +145,7 @@ public class SAP {
      * To find the length of shortest ancestral path between v and w
      * if no such path, returns -1 
     */
+    
     public int length(int v, int w) {
         int[] result = shortest(v, w);
         return result[0];

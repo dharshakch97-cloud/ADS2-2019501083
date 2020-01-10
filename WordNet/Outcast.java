@@ -1,3 +1,10 @@
+/** 
+ * @author Dharshak
+ *
+ * This class Outcast used to find unrelated word in the
+ * outcast*.txt files by calculating the maximum distances of those words 
+ * in between them of those words
+*/
 public class Outcast {
 	private WordNet wordnet;
 	// constructor takes a WordNet object
@@ -26,13 +33,5 @@ public class Outcast {
    		return outcast;
    } 
    // see test client below
-   public static void main(String[] args) throws Exception {
-   		WordNet wordnet = new WordNet(args[0], args[1]);
-    	Outcast outcast = new Outcast(wordnet);
-    	for (int t = 2; t < args.length; t++) {
-        	In in = new In(args[t]);
-        	String[] nouns = in.readAllStrings();
-        	System.out.println(args[t] + ": " + outcast.outcast(nouns));
-    	}
-   	}
+   // public static void main(String[] args)
 }
