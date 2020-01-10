@@ -63,7 +63,7 @@ public class SAP {
      * two vertices and its corresponding 
      * common ancestor
     */
-    private int[] shortest(int v, int w) {
+    private int[] shortest_len_ans(int v, int w) {
         validVertex(v); // validating the vertex v
         validVertex(w); // validating the vertex v
         int[] res = new int[2];
@@ -106,7 +106,7 @@ public class SAP {
      * two vertices and its corresponding 
      * common ancestor
     */
-    private int[] shortest(Iterable<Integer> v, Iterable<Integer> w) {
+    private int[] shortest_len_ans(Iterable<Integer> v, Iterable<Integer> w) {
         validVertices(v); // validating the vertex v
         validVertices(w); // validating the vertex w 
         int[] res = new int[2];
@@ -148,7 +148,7 @@ public class SAP {
      * if no such path, returns -1 
     */
     public int length(int v, int w) {
-        int[] result = shortest(v, w);
+        int[] result = shortest_len_ans(v, w);
         return result[0];
     }
  
@@ -160,7 +160,7 @@ public class SAP {
      * if no such path, returns -1
     */
     public int ancestor(int v, int w) {
-        int[] result = shortest(v, w);
+        int[] result = shortest_len_ans(v, w);
         return result[1];
     }
  
@@ -172,7 +172,7 @@ public class SAP {
      * if no such path, returns -1 
     */
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
-        int[] result = shortest(v, w);
+        int[] result = shortest_len_ans(v, w);
         return result[0];
     }
  
@@ -184,7 +184,7 @@ public class SAP {
      * if no such path, returns -1
     */
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
-        int[] result = shortest(v, w);
+        int[] result = shortest_len_ans(v, w);
         return result[1];
     }
  
