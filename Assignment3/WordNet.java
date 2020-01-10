@@ -73,5 +73,22 @@ public class WordNet {
         System.out.println("length = " + sap_dg.length(9, 12) +  ", Ancestor = " + sap_dg.ancestor(9, 12));
         System.out.println("length = " + sap_dg.length(7, 2) +  ", Ancestor = " + sap_dg.ancestor(7, 2));
         System.out.println("length = " + sap_dg.length(1, 6) +  ", Ancestor = " + sap_dg.ancestor(1, 6));
+
+        In in25 = new In("digraph25.txt");
+        Digraph dg25 = new Digraph(in25);
+        SAP sap_dg25 = new SAP(dg25);
+
+        ArrayList<Integer> a = new ArrayList<Integer>();
+        ArrayList<Integer> b = new ArrayList<Integer>();
+
+        a.add(13);
+        a.add(23);
+        a.add(24);
+
+        b.add(6);
+        b.add(16);
+        b.add(17);
+
+        System.out.println("length = " + sap_dg25.length(a, b) +  ", Ancestor = " + sap_dg25.ancestor(a, b));
     }
 }
