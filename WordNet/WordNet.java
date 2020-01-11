@@ -14,12 +14,10 @@ import java.util.ArrayList;
  */
 public class WordNet {
 
-    private LinearProbingHashST<String, ArrayList<Integer>> htable;
-    private LinearProbingHashST<Integer, String> htable1;
+    private LinearProbingHashST<String, ArrayList<Integer>> nounIds;
+    private LinearProbingHashST<Integer, String> idNoun;
    
-    private int v;
     private SAP sap;
-    private In in;
     private Digraph d;
 
    // constructor takes the name of the two input files
@@ -27,33 +25,31 @@ public class WordNet {
         if (synsets == null || hypernyms == null) {
             throw new IllegalArgumentException("File name is null");
         }
-        v = 0;
         readSynsets(synsets);
         readHypernyms(hypernyms);
     }
 
     private void readSynsets(String synsets) {
-        htable = new LinearProbingHashST<String, ArrayList<Integer>>();
-        htable1 = new LinearProbingHashST<Integer, String>();
+        nounIds = new LinearProbingHashST<String, ArrayList<Integer>>();
+        idNoun = new LinearProbingHashST<Integer, String>();
 
-        In in = new In(synsets);
-        while (in.hasNextLine()) {
-            v++;
-            String[] str = in.readLine().split(",");
+        In inSyn = new In(synsets);
+        while (inSyn.hasNextLine()) {
+            String[] str = inSyn.readLine().split(",");
             int id = Integer.parseInt(str[0]);
-            htable1.put(id, str[1]);
+            idNoun.put(id, str[1]);
 
             String[] words = str[1].split(" ");
             for (int i = 0; i < words.length; i++) {
-                if (htable.contains(words[i])) {
-                    ArrayList<Integer> id_list = htable.get(words[i]);
-                    id_list.add(id);
-                    htable.put(words[i], id_list);
+                if (nounIds.contains(words[i])) {
+                    ArrayList<Integer> idList = nounIds.get(words[i]);
+                    idList.add(id);
+                    nounIds.put(words[i], idList);
                 }
                 else {
-                    ArrayList<Integer> new_id = new ArrayList<Integer>();
-                    new_id.add(id);
-                    htable.put(words[i], new_id);
+                    ArrayList<Integer> newId = new ArrayList<Integer>();
+                    newId.add(id);
+                    nounIds.put(words[i], newId);
                 }
             }
         }
@@ -63,19 +59,19 @@ public class WordNet {
 
     private void readHypernyms(String hypernyms) {
 
-        ArrayList<String> h_id = new ArrayList<String>();
-        ArrayList<String[]> h_con = new ArrayList<String[]>();
+        ArrayList<String> hId = new ArrayList<String>();
+        ArrayList<String[]> hCon = new ArrayList<String[]>();
 
-        In in = new In(hypernyms);
-        while(in.hasNextLine()) {
-            String[] str = in.readLine().split(",",2);
+        In inHyp = new In(hypernyms);
+        while (inHyp.hasNextLine()) {
+            String[] str = inHyp.readLine().split(",", 2);
             if (str.length > 1) {
-                h_id.add(str[0]);
-                h_con.add(str[1].split(","));
+                hId.add(str[0]);
+                hCon.add(str[1].split(","));
             }
             else {
-                h_id.add(str[0]);
-                h_con.add(null);
+                hId.add(str[0]);
+                hCon.add(null);
             }
             // for (int i = 1; i < str.length; i++) {
             //     System.out.println(str[0] + " " + str[i]);
@@ -83,15 +79,13 @@ public class WordNet {
             // }
         }
 
-        int e = 0;
-        d = new Digraph(h_id.size());
-        for (int i = 0; i < h_id.size(); i++) {
-            if (h_con.get(i) != null) {
-                for (int j = 0; j < h_con.get(i).length; j++) {
-                    int d1 = Integer.parseInt(h_id.get(i));
-                    int d2 = Integer.parseInt(h_con.get(i)[j]);
+        d = new Digraph(hId.size());
+        for (int i = 0; i < hId.size(); i++) {
+            if (hCon.get(i) != null) {
+                for (int j = 0; j < hCon.get(i).length; j++) {
+                    int d1 = Integer.parseInt(hId.get(i));
+                    int d2 = Integer.parseInt(hCon.get(i)[j]);
                     d.addEdge(d1, d2);
-                    e++;
                 }
             }
         }
@@ -114,7 +108,7 @@ public class WordNet {
 
    // returns all WordNet nouns
    public Iterable<String> nouns() {
-        return htable.keys();
+        return nounIds.keys();
    }
 
    // is the word a WordNet noun?
@@ -122,7 +116,7 @@ public class WordNet {
         if (word == null) {
             throw new IllegalArgumentException("word is null");
         }
-        return htable.contains(word);
+        return nounIds.contains(word);
    }
 
    // distance between nounA and nounB (defined below)
@@ -131,7 +125,7 @@ public class WordNet {
         if (!isNoun(nounA) || !isNoun(nounB)) {
             throw new IllegalArgumentException("Not WordNet Noun");
         }
-        return sap.length(htable.get(nounA), htable.get(nounB));
+        return sap.length(nounIds.get(nounA), nounIds.get(nounB));
    }
 
    // a synset (second field of synsets.txt) that is the common ancestor of nounA and nounB
@@ -141,7 +135,7 @@ public class WordNet {
         if (!isNoun(nounA) || !isNoun(nounB)) {
             throw new IllegalArgumentException("Not WordNet Noun");
         }  
-        return htable1.get(sap.ancestor(htable.get(nounA), htable.get(nounB)));
+        return idNoun.get(sap.ancestor(nounIds.get(nounA), nounIds.get(nounB)));
    }
    // do unit testing of this class
    // public static void main(String[] args)  throws Exception {

@@ -6,7 +6,7 @@
  * in between them of those words
 */
 public class Outcast {
-	private WordNet wordnet;
+    private final WordNet wordnet;
 	// constructor takes a WordNet object
    public Outcast(WordNet wordnet) {
    		this.wordnet = wordnet;
@@ -19,9 +19,9 @@ public class Outcast {
    		for (String i : nouns) {
    			int distance = 0;
    			for (String j : nouns) {
-   				int dist_len = wordnet.distance(i, j);
+   				int distLen = wordnet.distance(i, j);
    				// System.out.println("distance (" + i + "," + j + ") :" + dist_len);
-   				distance += dist_len;
+   				distance += distLen;
    			}
    			// System.out.println("max. distance: " + distance);
    			if (distance > d) {

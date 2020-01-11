@@ -9,7 +9,7 @@ import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 */
 public class SAP {
 
-    private Digraph digraph; // Digraph object creation 'digraph'
+    private final Digraph digraph; // Digraph object creation 'digraph'
     /** 
      * @param v integer
      *
@@ -18,10 +18,19 @@ public class SAP {
      * If vertex in the graph is not valid, throws 'InexOutOfBoundsException'
      * and displays 'vertex is not between 0 and total vertices' 
     */
+
+    // constructor takes a digraph (not necessarily a DAG)
+    public SAP(Digraph G) {
+        // if (G == null) {
+        //     throw IllegalArgumentException("Graph is null");
+        // }
+        digraph = new Digraph(G);
+    }
+
     private void validVertex(int v) {
-        int V = digraph.V();
-        if (v < 0 && v >= V) {
-            throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
+        int noOfVertices = digraph.V();
+        if (v < 0 && v >= noOfVertices) {
+            throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (noOfVertices-1));
         }
     }
     /** 
@@ -34,12 +43,12 @@ public class SAP {
     */
     private void validVertices(Iterable<Integer> vertices) {
         if (vertices == null) {
-            throw new NullPointerException("argument is null");
+            throw new IllegalArgumentException("argument is null");
         }
-        int V = digraph.V();
+        int noOfVertices = digraph.V();
         for (int v : vertices) {
-            if (v < 0 || v >= V) {
-                throw new IndexOutOfBoundsException("vertex " + v + " is not between 0 and " + (V-1));
+            if (v < 0 || v >= noOfVertices) {
+                throw new IllegalArgumentException("vertex " + v + " is not between 0 and " + (noOfVertices-1));
             }
         }
     } 
@@ -60,29 +69,29 @@ public class SAP {
         BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(digraph, v); // bfs for v vertex
         BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(digraph, w); // bfs for v vertex
         
-        int shortest_Len = Integer.MAX_VALUE; // stores Integer MAX_VALUE as default
-        int shortest_Ancestor = -1; // stores -1 as default
+        int shortestLen = Integer.MAX_VALUE; // stores Integer MAX_VALUE as default
+        int shortestAncestor = -1; // stores -1 as default
         // checking for the paths for both of the vertices and finding the length of both the paths
         // Then, if it is shortest length update the shortest_Len and the vertex 'i' as the common ancestor 
         for (int i = 0; i < digraph.V(); ++i) {
             if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) {
                 int len = bfsv.distTo(i) + bfsw.distTo(i);
-                if (len < shortest_Len) {
-                    shortest_Len = len;
-                    shortest_Ancestor = i;
+                if (len < shortestLen) {
+                    shortestLen = len;
+                    shortestAncestor = i;
                 }
             }
         }
         // if the shortest_Ancestor is -1, it has no path
         // So, update shortest_Len and shortest_Ancestor as -1
         // Or else, update its actual shortest_Len and shortest_Ancestor
-        if (shortest_Ancestor == -1) {
+        if (shortestAncestor == -1) {
             res[0] = -1;
             res[1] = -1;
         }
         else {
-            res[0] = shortest_Len;
-            res[1] = shortest_Ancestor;
+            res[0] = shortestLen;
+            res[1] = shortestAncestor;
         }
         return res; // returns the shortest_Len and shortest_Ancestor as a array
     }
@@ -103,39 +112,31 @@ public class SAP {
         BreadthFirstDirectedPaths bfsv = new BreadthFirstDirectedPaths(digraph, v); // bfs for v vertex
         BreadthFirstDirectedPaths bfsw = new BreadthFirstDirectedPaths(digraph, w); // bfs for w vertex
         
-        int shortest_Len = Integer.MAX_VALUE; // stores Integer MAX_VALUE as default
-        int shortest_Ancestor = -1; // stores -1 as deault
+        int shortestLen = Integer.MAX_VALUE; // stores Integer MAX_VALUE as default
+        int shortestAncestor = -1; // stores -1 as deault
         // checking for the paths for both of the vertices and finding the length of both the paths
         // Then, if it is shortest length update the shortest_Len and the vertex 'i' as the common ancestor 
         for (int i = 0; i < digraph.V(); ++i) {
             if (bfsv.hasPathTo(i) && bfsw.hasPathTo(i)) { 
                 int len = bfsv.distTo(i) + bfsw.distTo(i);
-                if (len < shortest_Len) {
-                    shortest_Len = len;
-                    shortest_Ancestor = i;
+                if (len < shortestLen) {
+                    shortestLen = len;
+                    shortestAncestor = i;
                 }
             }
         }
         // if the shortest_Ancestor is -1, it has no path
         // So, update shortest_Len and shortest_Ancestor as -1
         // Or else, update its actual shortest_Len and shortest_Ancestor
-        if (shortest_Ancestor == -1) {
+        if (shortestAncestor == -1) {
             res[0] = -1;
             res[1] = -1;
         }
         else {
-            res[0] = shortest_Len;
-            res[1] = shortest_Ancestor;
+            res[0] = shortestLen;
+            res[1] = shortestAncestor;
         }
         return res; // returns the shortest_Len and shortest_Ancestor as a array
-    }
-
-    // constructor takes a digraph (not necessarily a DAG)
-    public SAP(Digraph G) {
-        // if (G == null) {
-        //     throw IllegalArgumentException("Graph is null");
-        // }
-        digraph = new Digraph(G);
     }
 
     /** 
