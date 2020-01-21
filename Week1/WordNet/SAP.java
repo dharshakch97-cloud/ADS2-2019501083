@@ -5,6 +5,8 @@ import edu.princeton.cs.algs4.BreadthFirstDirectedPaths;
 
 import java.lang.IllegalArgumentException;
 
+import java.util.Arrays;
+
 /** 
  * @author Dharshak
  * 
@@ -187,6 +189,9 @@ public class SAP {
     */
 
     public int length(Iterable<Integer> v, Iterable<Integer> w) {
+        if (Arrays.asList(v).contains(null) || Arrays.asList(w).contains(null)) {
+            throw new IllegalArgumentException("argument is null");
+        } 
         int[] result = shortest(v, w);
         return result[0];
     }
@@ -200,6 +205,9 @@ public class SAP {
     */
 
     public int ancestor(Iterable<Integer> v, Iterable<Integer> w) {
+        if (Arrays.asList(v).contains(null) || Arrays.asList(w).contains(null)) {
+            throw new IllegalArgumentException("argument is null");
+        }
         int[] result = shortest(v, w);
         return result[1];
     }
