@@ -8,7 +8,7 @@
  *  of each pixel as calculated by SeamCarver object. 
  * 
  ******************************************************************************/
-
+import java.util.Arrays;
 public class PrintEnergy {
 
     public static void main(String[] args) {
@@ -21,9 +21,11 @@ public class PrintEnergy {
 
         for (int row = 0; row < sc.height(); row++) {
             for (int col = 0; col < sc.width(); col++)
-                System.out.printf("%9.0f ", sc.energy(col, row));
+                System.out.printf("%9.2f ", sc.energy(col, row));
             System.out.println();
         }
+        int[] s = sc.findVerticalSeam();
+        System.out.println(Arrays.toString(s));
     }
 
 }
