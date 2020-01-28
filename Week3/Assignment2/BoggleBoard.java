@@ -201,8 +201,8 @@ public class BoggleBoard {
         //     score += solver.scoreOf(word);
         // }
         // System.out.println("Score = " + score);
-        for (String word : dictionary) {
-            System.out.println(word);
-        }
+        // for (String word : dictionary) {
+        //     System.out.println(word);
+        // }
     }
 }

@@ -36,7 +36,7 @@ public class SeamCarver {
     // energy of pixel at column x and row y
     public double energy(int x, int y) {
         if(x < 0 || x >= width() || y < 0 || y >= height())
-            throw new IndexOutOfBoundsException();
+            throw new IllegalArgumentException();
 
         if (x == 0 || x == width() - 1 || y == 0 || y == height() - 1) {
             return 1000;
@@ -177,17 +177,20 @@ public class SeamCarver {
 
         Picture p = new Picture(this.width(), this.height() - 1);
         int pr_seam = seam[0];
+
         for (int i = 0; i < this.width(); i++) {
             pr_seam = seam[i];
             for (int j = 0;  j < this.height(); j++) {
-                Color c = picture.get(i, j);
+                if (seam[i] == j) 
+                    continue;
+                Color c = this.picture.get(i, j);
                 if (seam[i] > j)
                     p.set(i, j, c);
                 else 
                     p.set(i, j - 1, c);
             }
         }
-        picture = p;
+        this.picture = p;
     }
 
     // remove vertical seam from current picture
@@ -201,12 +204,16 @@ public class SeamCarver {
         for (int i = 0; i < this.height(); i++) {
             pr_seam = seam[i];
             for (int j = 0; j < this.width(); j++) {
-                Color c = picture.get(j, i);
+                if (seam[i] == j)
+                    continue;
+                Color c = this.picture.get(j, i);
                 if (seam[i] > j)
                     p.set(j, i, c);
+                else
+                    p.set(j - 1, i, c);
             }
         }
-        picture = p;
+        this.picture = p;
     }
 
     //  unit testing (optional)
