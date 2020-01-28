@@ -7,6 +7,8 @@ public class SeamCarver {
    int width;
    int height;
    Picture picture;
+   private double[] distTo;
+   private int[][] edgeTo;
    // create a seam carver object based on the given picture
    public SeamCarver(Picture picture) {
         if (picture == null) {
@@ -60,5 +62,58 @@ public class SeamCarver {
         int rgb = (r * r) + (g * g) + (b * b);
         return rgb;
    }
-         
+       
+   public int[] findVerticalSeam() {
+        distTo = new double[width()];
+        edgeTo = new int[width()][height()];
+
+        for (int i = 0; i < distTo.length; i++) {
+            distTo[i] = 1000;
+        }
+
+        for (int i = 1; i < height(); i++) {
+            double[] lastDistTo = distTo.clone();
+            for (int k = 0; k < distTo.length; k++) {
+                distTo[k] = Double.POSITIVE_INFINITY;
+            }
+            for (int j = 1; j < width(); j++) {
+                int x = j;
+                int y = i;
+                double energy = energy(x, y);
+                v_relax(j - 1, x, y, energy, lastDistTo);
+                v_relax(j, x, y, energy, lastDistTo);
+                v_relax(j + 1, x, y, energy, lastDistTo);
+            }
+        }
+
+        double minimumWeight = Double.POSITIVE_INFINITY;
+        int minimum = 0;
+        for (int i = 0; i < distTo.length; i++) {
+            double weight = distTo[i];
+            if (weight < minimumWeight) {
+                minimumWeight = weight;
+                minimum = i;
+            }
+        }
+
+        int[] v_seam = new int[height()];
+        for (int y = height() - 1; y >= 0; y--) {
+            v_seam[y] = minimum;
+            minimum = edgeTo[minimum][y];
+        }
+        return v_seam;
+    }
+
+    private void v_relax(int pre, int x, int y, double energy, double[] lastDistTo) {
+        if (pre < 0 || pre >= lastDistTo.length) {
+            return;
+        }
+
+        double weight = lastDistTo[pre];
+        int index = x;
+        if (distTo[index] > weight + energy) {
+            distTo[index] = weight + energy;
+            edgeTo[x][y] = pre;
+        }
+    }  
 }

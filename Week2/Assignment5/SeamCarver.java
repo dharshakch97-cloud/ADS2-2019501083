@@ -170,6 +170,25 @@ public class SeamCarver {
         }
     }
 
+    public void removeHorizantalSeam(int[] seam) {
+        if (seam == null || height() <= 1 || seam.length != width())
+            throw new IllegalArgumentException();
+
+        Picture p = new Picture(width(), height() - 1);
+        int pr_seam = seam[0];
+        for (int i = 0; i < width(); i++) {
+            pr_seam = seam[i];
+            for (int j = 0;  j < height(); j++) {
+                Color c = picture.get(i, j);
+                if (seam[i] > j)
+                    p.set(i, j, c);
+                else 
+                    p.set(i, j - 1, c);
+            }
+        }
+        picture = p;
+    }
+
     public void removeVerticalSeam(int[] seam) {
         if (seam == null || width() <= 1 || seam.length != height())
             throw new IllegalArgumentException();
@@ -179,12 +198,10 @@ public class SeamCarver {
 
         for (int i = 0; i < height(); i++) {
             pr_seam = seam[i];
-            for (int j = 0; j < width(); j++) {
-                Color c = picture.get(j, i);
+            for (j = 0; j < width(); j++) {
+                Color c = picture.get(x, y);
                 if (seam[i] > j)
                     p.set(j, i, c);
-                else 
-                    p.set(j - 1, i, c);
             }
         }
         picture = p;

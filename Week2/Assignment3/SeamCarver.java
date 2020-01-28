@@ -62,8 +62,49 @@ public class SeamCarver {
         int rgb = (r * r) + (g * g) + (b * b);
         return rgb;
    }
+
+   public int[] findHorizontalSeam() {
+        distTo = new double[this.height()];
+        edgeTo = new int[this.width()][this.height()];
+
+        for (int i = 0; i < this.distTo.length; i++) {
+            this.distTo[i] = 1000;
+        }
+
+        for (int i = 1; i < width(); i++) {
+            double[] lastDistTo = this.distTo.clone();
+            for (int k = 0; k < this.distTo.length; k++) {
+                this.distTo[k] = Double.POSITIVE_INFINITY;
+            }
+            for (int j = 1; j < height(); j++) {
+                int x = i;
+                int y = j;
+                double energy = energy(x, y);
+                h_relax(j - 1, x, y, energy, lastDistTo);
+                h_relax(j, x, y, energy, lastDistTo);
+                h_relax(j + 1, x, y, energy, lastDistTo);
+            }
+        }
+
+        double minWeight = Double.POSITIVE_INFINITY;
+        int min = 0;
+        for (int i = 0; i < this.distTo.length; i++) {
+            double weight = this.distTo[i];
+            if (weight < minWeight) {
+                min = i;
+                minWeight = weight;
+            }
+        }
+
+        int[] hseam = new int[this.width()];
+        for (int x = this.width() - 1; x >= 0; x--) {
+            hseam[x] = min;
+            min = edgeTo[x][min];
+        }
+        return hseam;
+    }
        
-   public int[] findVerticalSeam() {
+    public int[] findVerticalSeam() {
         distTo = new double[width()];
         edgeTo = new int[width()][height()];
 
@@ -104,6 +145,18 @@ public class SeamCarver {
         return v_seam;
     }
 
+    private void h_relax(int pre, int x, int y, double energy, double[] lastDistTo) {
+        if (pre < 0 || pre >= lastDistTo.length) {
+            return;
+        }
+        double weight = lastDistTo[pre];
+        int index = y;
+        if (this.distTo[index] > weight + energy) {
+            this.distTo[index] = weight + energy;
+            this.edgeTo[x][y] = pre;
+        }
+    }
+    
     private void v_relax(int pre, int x, int y, double energy, double[] lastDistTo) {
         if (pre < 0 || pre >= lastDistTo.length) {
             return;

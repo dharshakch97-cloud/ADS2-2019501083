@@ -1,83 +1,104 @@
+import edu.princeton.cs.algs4.Picture;
 import java.awt.Color;
-import java.util.Arrays;
 
 public class SeamCarver {
+    private static final boolean HORIZONTAL = true;
+    private static final boolean VERTICAL   = false;
 
     private Picture picture;
     private double[] distTo;
     private int[][] edgeTo;
 
+    // create a seam carver object based on the given picture
     public SeamCarver(Picture picture) {
         if (picture == null) {
             throw new IllegalArgumentException();
         }
+
         this.picture = new Picture(picture);
     }
 
+    // current picture
     public Picture picture() {
         return new Picture(this.picture);
-    }             
+    }                          
 
+    // width of current picture
     public int width() {
         return this.picture.width();
     }
 
+    // height of current picture
     public int height() {
         return this.picture.height();
     }
 
+    // energy of pixel at column x and row y
     public double energy(int x, int y) {
-        if(x < 0 || x >= width() || y < 0 || y >= height())
-            throw new IndexOutOfBoundsException();
+        if (x < 0 || y < 0 || x > width() - 1 || y > height() - 1) {
+            throw new IllegalArgumentException();
+        }
 
-        if (x == 0 || x == width() - 1 || y == 0 || y == height() - 1) {
+        if (x == 0 || y == 0 || x == width() - 1 || y == height() - 1) {
             return 1000;
         }
 
-        int delta_X = delta_energyCalculate(x + 1, y, x - 1, y);
-        int delta_Y = delta_energyCalculate(x, y + 1, x, y - 1);
+        Color top    = this.picture.get(x, y + 1);
+        Color bottom = this.picture.get(x, y - 1);
+        Color left   = this.picture.get(x - 1, y);
+        Color right  = this.picture.get(x + 1, y);
 
-        double energy = Math.sqrt(delta_X + delta_Y);
-        return energy;
+        return Math.sqrt(squareGradient(top, bottom) + squareGradient(left, right));
     }
 
-    private int delta_energyCalculate(int x1, int y1, int x2, int y2) {
-        Color c1 = picture.get(x1, y1);
-        Color c2 = picture.get(x2, y2);
-
-        int r = c1.getRed() - c2.getRed();
-        int g = c1.getGreen() - c2.getGreen();
-        int b = c1.getBlue() - c2.getBlue();
-
-        int rgb = (r * r) + (g * g) + (b * b);
-        return rgb;
+    private double squareGradient(Color first, Color second) {
+        return Math.pow(first.getRed() - second.getRed(), 2) + 
+               Math.pow(first.getGreen() - second.getGreen(), 2) + 
+               Math.pow(first.getBlue()  - second.getBlue(), 2);
     }
 
+    // sequence of indices for horizontal seam
     public int[] findHorizontalSeam() {
-        distTo = new double[this.height()];
-        edgeTo = new int[this.width()][this.height()];
+        return seam(HORIZONTAL);
+    }
+
+    // sequence of indices for vertical seam
+    public int[] findVerticalSeam() {
+        return seam(VERTICAL);
+    }
+
+    private int[] seam(boolean direction) {
+        this.distTo = (direction == VERTICAL) ? new double[this.width()] : new double[this.height()];
+        this.edgeTo = new int[this.width()][this.height()];
 
         for (int i = 0; i < this.distTo.length; i++) {
             this.distTo[i] = 1000;
         }
 
-        for (int i = 1; i < width(); i++) {
+        int maxI = (direction == VERTICAL) ? this.height() : this.width();
+        int maxJ = (direction == VERTICAL) ? this.width() : this.height();
+
+        for (int i = 1; i < maxI; i++) {
             double[] lastDistTo = this.distTo.clone();
             for (int k = 0; k < this.distTo.length; k++) {
                 this.distTo[k] = Double.POSITIVE_INFINITY;
             }
-            for (int j = 1; j < height(); j++) {
-                int x = i;
-                int y = j;
+
+            for (int j = 1; j < maxJ; j++) {
+                int x = (direction == VERTICAL) ? j : i;
+                int y = (direction == VERTICAL) ? i : j;
+
                 double energy = energy(x, y);
-                h_relax(j - 1, x, y, energy, lastDistTo);
-                h_relax(j, x, y, energy, lastDistTo);
-                h_relax(j + 1, x, y, energy, lastDistTo);
+
+                relax(j - 1, x, y, energy, lastDistTo, direction);
+                relax(j    , x, y, energy, lastDistTo, direction);
+                relax(j + 1, x, y, energy, lastDistTo, direction);
             }
         }
 
         double minWeight = Double.POSITIVE_INFINITY;
         int min = 0;
+        
         for (int i = 0; i < this.distTo.length; i++) {
             double weight = this.distTo[i];
             if (weight < minWeight) {
@@ -85,111 +106,88 @@ public class SeamCarver {
                 minWeight = weight;
             }
         }
+        
+        int[] seam = (direction == VERTICAL) ? new int[this.height()] : new int[this.width()];
 
-        int[] hseam = new int[this.width()];
-        for (int x = this.width() - 1; x >= 0; x--) {
-            hseam[x] = min;
-            min = edgeTo[x][min];
+        if (direction == VERTICAL) {
+            for (int y = this.height() - 1; y >= 0; y--) {
+                seam[y] = min;
+                min = edgeTo[min][y];
+            }
+        } else {
+            for (int x = this.width() - 1; x >= 0; x--) {
+                seam[x] = min;
+                min = edgeTo[x][min];
+            }
         }
-        return hseam;
+
+        return seam;
     }
-
-    public int[] findVerticalSeam() {
-        distTo = new double[width()];
-        edgeTo = new int[width()][height()];
-
-        for (int i = 0; i < distTo.length; i++) {
-            distTo[i] = 1000;
-        }
-
-        for (int i = 1; i < height(); i++) {
-            double[] lastDistTo = distTo.clone();
-            for (int k = 0; k < distTo.length; k++) {
-                distTo[k] = Double.POSITIVE_INFINITY;
-            }
-            for (int j = 1; j < width(); j++) {
-                int x = j;
-                int y = i;
-                double energy = energy(x, y);
-                v_relax(j - 1, x, y, energy, lastDistTo);
-                v_relax(j, x, y, energy, lastDistTo);
-                v_relax(j + 1, x, y, energy, lastDistTo);
-            }
-        }
-
-        double minimumWeight = Double.POSITIVE_INFINITY;
-        int minimum = 0;
-        for (int i = 0; i < distTo.length; i++) {
-            double weight = distTo[i];
-            if (weight < minimumWeight) {
-                minimumWeight = weight;
-                minimum = i;
-            }
-        }
-
-        int[] v_seam = new int[height()];
-        for (int y = height() - 1; y >= 0; y--) {
-            v_seam[y] = minimum;
-            minimum = edgeTo[minimum][y];
-        }
-        return v_seam;
-    }
-
-    private void h_relax(int pre, int x, int y, double energy, double[] lastDistTo) {
-        if (pre < 0 || pre >= lastDistTo.length) {
+    private void relax(int prev, int x, int y, double energy, double[] lastDistTo, boolean direction) {
+        if (prev < 0 || prev >= lastDistTo.length) {
             return;
         }
-        double weight = lastDistTo[pre];
-        int index = y;
+
+        double weight = lastDistTo[prev];
+
+        int index = (direction == VERTICAL) ? x : y;
         if (this.distTo[index] > weight + energy) {
             this.distTo[index] = weight + energy;
-            this.edgeTo[x][y] = pre;
+            this.edgeTo[x][y] = prev;
         }
     }
 
-    private void v_relax(int pre, int x, int y, double energy, double[] lastDistTo) {
-        if (pre < 0 || pre >= lastDistTo.length) {
-            return;
+    // remove horizontal seam from current picture
+    public void removeHorizontalSeam(int[] seam) {
+        if (seam == null || this.height() <= 1 || seam.length != this.width()) {
+            throw new IllegalArgumentException();
         }
 
-        double weight = lastDistTo[pre];
-        int index = x;
-        if (distTo[index] > weight + energy) {
-            distTo[index] = weight + energy;
-            edgeTo[x][y] = pre;
+        Picture newPicture = new Picture(this.width(), this.height() - 1);
+
+        int prevSeam = seam[0];
+
+        for (int x = 0; x < this.width(); x++) {
+            // if (Math.abs(seam[x] - prevSeam) > 1 || seam[x] < 0 || seam[x] >= this.height()) {
+            //     throw new IllegalArgumentException();
+            // }
+            prevSeam = seam[x];
+
+            for (int y = 0; y < this.height(); y++) {
+                if (seam[x] == y) continue;
+
+                Color color = this.picture.get(x, y);
+                newPicture.set(x, seam[x] > y ? y : y - 1, color);
+            }
         }
+
+        this.picture = newPicture;
     }
-}
 
-    // 
-    // public void removeHorizontalSeam(int[] seam) {
-    //     if (seam == null || this.height() <= 1 || seam.length != this.width()) {
-    //         throw new IllegalArgumentException();
-    //     }
-    //     Picture newPicture = new Picture(this.width(), this.height() - 1);
-    //     int prevSeam = seam[0];
-    //     for (int x = 0; x < this.width(); x++) {
-    //         prevSeam = seam[x];
-    //         for (int y = 0; y < this.height(); y++) {
-    //             if (seam[x] == y) continue;
-    //             Color color = this.picture.get(x, y);
-    //             newPicture.set(x, seam[x] > y ? y : y - 1, color);
-    //         }
-    //     }
-    //     this.picture = newPicture;
-    // }
-    // public void removeVerticalSeam(int[] seam) {
-    //     if (seam == null || this.width() <= 1 || seam.length != this.height()) {
-    //         throw new IllegalArgumentException();
-    //     }
-    //     Picture newPicture = new Picture(this.width() - 1, this.height());
-    //     int prevSeam = seam[0];
-    //     for (int y = 0; y < this.height(); y++) {
-    //         prevSeam = seam[y];
-    //         for (int x = 0; x < this.width(); x++) {
-    //             Color color = this.picture.get(x, y);
-    //             newPicture.set(seam[y] > x ? x : x - 1, y, color);
-    //         }
-    //     }
-    //     this.picture = newPicture;
-    // }
+    // remove vertical seam from current picture
+    public void removeVerticalSeam(int[] seam) {
+        if (seam == null || this.width() <= 1 || seam.length != this.height()) {
+            throw new IllegalArgumentException();
+        }
+
+        Picture newPicture = new Picture(this.width() - 1, this.height());
+
+        int prevSeam = seam[0];
+
+        for (int y = 0; y < this.height(); y++) {
+            // if (Math.abs(seam[y] - prevSeam) > 1 || seam[y] < 0 || seam[y] >= this.width()) {
+            //     throw new IllegalArgumentException();
+            // }
+            prevSeam = seam[y];
+
+            for (int x = 0; x < this.width(); x++) {
+                if (seam[y] == x) continue;
+
+                Color color = this.picture.get(x, y);
+                newPicture.set(seam[y] > x ? x : x - 1, y, color);
+            }
+        }
+
+        this.picture = newPicture;
+    }
+ }
