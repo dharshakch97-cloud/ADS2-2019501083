@@ -99,18 +99,25 @@ public class BoggleSolver {
     }
     // Returns the score of the given word if it is in the dictionary, zero otherwise.
     // (You can assume the word contains only the uppercase letters A through Z.)
-    // public int scoreOf(String word)
+    public int scoreOf(String word) {
+        if (word == null) 
+            return 0;
+        Integer value = trie.get(word);
+        if (value == null)
+            return 0;
+        return value;
+    }
 
     public static void main(String[] args) {
         In in = new In(args[0]);
         String[] dictionary = in.readAllStrings();
         BoggleSolver solver = new BoggleSolver(dictionary);
         BoggleBoard board = new BoggleBoard(args[1]);
-        // int score = 0;
+        int score = 0;
         for (String word : solver.getAllValidWords(board)) {
             System.out.println(word);
-            // score += solver.scoreOf(word);
+            score += solver.scoreOf(word);
         }
-        // System.out.println("Score = " + score);
+        System.out.println("Score = " + score);
     }
 }

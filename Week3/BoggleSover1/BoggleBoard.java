@@ -186,42 +186,40 @@ public class BoggleBoard {
         }
         return sb.toString().trim();
     }
-
+}
     /**
      * Unit tests the BoggleBoard data type.
      */
-    public static void main(String[] args) {
+    // public static void main(String[] args) {
 
-        // initialize a 4-by-4 board using Hasbro dice
-        System.out.println("Hasbro board:");
-        BoggleBoard board1 = new BoggleBoard();
-        System.out.println(board1);
-        System.out.println();
+    //     // initialize a 4-by-4 board using Hasbro dice
+    //     StdOut.println("Hasbro board:");
+    //     BoggleBoard board1 = new BoggleBoard();
+    //     StdOut.println(board1);
+    //     StdOut.println();
 
-        // initialize a 4-by-4 board using letter frequencies in English language
-        System.out.println("Random 4-by-4 board:");
-        BoggleBoard board2 = new BoggleBoard(4, 4);
-        System.out.println(board2);
-        System.out.println();
+    //     // initialize a 4-by-4 board using letter frequencies in English language
+    //     StdOut.println("Random 4-by-4 board:");
+    //     BoggleBoard board2 = new BoggleBoard(4, 4);
+    //     StdOut.println(board2);
+    //     StdOut.println();
 
-        // initialize a 4-by-4 board from a 2d char array
-        System.out.println("4-by-4 board from 2D character array:");
-        char[][] a =  {
-            { 'D', 'O', 'T', 'Y' },
-            { 'T', 'R', 'S', 'F' },
-            { 'M', 'X', 'M', 'O' },
-            { 'Z', 'A', 'B', 'W' }
-        };
-        BoggleBoard board3 = new BoggleBoard(a);
-        System.out.println(board3);
-        System.out.println();
+    //     // initialize a 4-by-4 board from a 2d char array
+    //     StdOut.println("4-by-4 board from 2D character array:");
+    //     char[][] a =  {
+    //         { 'D', 'O', 'T', 'Y' },
+    //         { 'T', 'R', 'S', 'F' },
+    //         { 'M', 'X', 'M', 'O' },
+    //         { 'Z', 'A', 'B', 'W' }
+    //     };
+    //     BoggleBoard board3 = new BoggleBoard(a);
+    //     StdOut.println(board3);
+    //     StdOut.println();
 
-        // initialize a 4-by-4 board from a file
-        String filename = "board-quinquevalencies.txt";
-        System.out.println("4-by-4 board from file " + filename + ":");
-        BoggleBoard board4 = new BoggleBoard(filename);
-        System.out.println(board4);
-        System.out.println();
-    }
-    
-}
+    //     // initialize a 4-by-4 board from a file
+    //     String filename = "board-quinquevalencies.txt";
+    //     StdOut.println("4-by-4 board from file " + filename + ":");
+    //     BoggleBoard board4 = new BoggleBoard(filename);
+    //     StdOut.println(board4);
+    //     StdOut.println();
+    // }

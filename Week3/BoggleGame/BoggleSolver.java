@@ -1,149 +1,111 @@
-import java.util.Set;
-import java.util.HashSet;
-
-public class BoggleSolver
-{
-	TrieSET ts;
+import java.util.ArrayList;
+public class BoggleSolver {
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
+    TrieST<Integer> trie;
+    ArrayList<String> list;
+    
     public BoggleSolver(String[] dictionary) {
-    	ts = new TrieSET();
-        for (String i : dictionary) {
-            ts.add(i);
+        trie = new TrieST<Integer>();
+        int[] scores = {0, 0, 0, 1, 1, 2, 3, 5, 11};
+        list = new ArrayList<String>();
+        for (int i = 0; i < dictionary.length; i++) {
+            if (dictionary[i].length() > 8) {
+                trie.put(dictionary[i], 11);
+            } else {
+                trie.put(dictionary[i], scores[dictionary[i].length()]);
+            }
         }
     }
 
+    private boolean isValid(String word) {
+        if (!trie.hasPrefix(word))
+            return false;
+        return true;
+    }
+    
+    private String check(char ch) {
+        if (ch == 'Q')
+            return "QU";
+        return ch + "";
+    }
     // Returns the set of all valid words in the given Boggle board, as an Iterable.
-  public Iterable<String> getAllValidWords(BoggleBoard board) {
-    Set<String> validWords = new HashSet<String>();
-    if (board == null) {
-      throw new NullPointerException("board is null");
-    }
-    for (int i = 0; i < board.rows(); i++) {
-      for (int j = 0; j < board.cols(); j++) {
-        boolean[][] marked = new boolean[board.rows()][board.cols()];
-        collect(board, i, j, marked, "", validWords);
-      }
-    }
-
-    return validWords;
-  }
-
-  private void collect(BoggleBoard board, int row, int col, boolean[][] marked, String prefix, Set<String> set) {
-    if (marked[row][col]) {
-      return;
-    }
-
-    char letter = board.getLetter(row, col);
-    String word = prefix;
-
-    if (letter == 'Q') {
-      word += "QU";
-    } else {
-      word += letter;
-    }
-
-    if (!ts.hasPrefix(word)) {
-      return;
-    }
-
-    if (word.length() > 2 && ts.contains(word)) {
-      set.add(word);
-    }
-
-    marked[row][col] = true;
-
-    for (int i = -1; i <= 1; i++) {
-      for (int j = -1; j <= 1; j++) {
-        if (i == 0 && j == 0) {
-          continue;
+    public Iterable<String> getAllValidWords(BoggleBoard board) {
+        boolean[][] visited;
+        for (int i = 0; i < board.rows(); i++) {
+            for (int j = 0; j < board.cols(); j++) {
+                visited = new boolean[board.rows()][board.cols()];
+                dfs(board, i, j, check(board.getLetter(i, j)), visited);
+            }
         }
-
-        if ((row + i >= 0) && (row + i < board.rows()) && (col + j >= 0) && (col + j < board.cols())) {
-          collect(board, row + i, col + j, marked, word, set);
-        }
-      }
+        return list;
     }
-
-    marked[row][col] = false;
-  }
-
-    // Returns the set of all valid words in the given Boggle board, as an Iterable.
-    // public Iterable<String> getAllValidWords(BoggleBoard board) {
-    //     Set<String> words = new HashSet<String>();
-    //     if (board == null)
-    //         throw new IllegalArgumentException();
-
-    //     for (int i = 0; i < board.rows(); i++) {
-    //         for (int j = 0; j < board.cols(); j++) {
-    //             boolean[][] checked = new boolean[board.rows()][board.cols()];
-    //             check_trieWord(board, i, j, checked, "", words);
-    //         }
-    //     }
-    //     for (String i : words)
-    //         System.out.println(i);
-    //     return words;
-    // }
-
-    // private void check_trieWord(BoggleBoard b, int r, int c, boolean[][] isChecked, String prf, Set<String> words) {
-    //     if (isChecked[r][c])
-    //         return;
-
-    //     char letter = b.getLetter(r, c);
-    //     if (letter == 'Q')
-    //         prf += "QU";
-    //     else
-    //         prf += letter;
-
-    //     if (!ts.hasPrefix(prf))
-    //         return;
-
-    //     if (prf.length() > 2 && ts.contains(prf))
-    //         words.add(prf);
-
-    //     isChecked[r][c] = true;
-
-    //     for (int i = -1; i <= 1; i++) {
-    //         for (int j = -1; j <= -1; j++) {
-    //             if (i == 0 && j == 0)
-    //                 continue;
-    //             if ((r + i >= 0) && (r + i < b.rows()) && (c + i >= 0) && (c + i < b.cols()))
-    //                 check_trieWord(b, r + i, c + i, isChecked, prf, words);
-    //         }
-    //     }
-
-    //     isChecked[r][c] = false;
-    // }
+    private boolean index(int i, int j, int rows, int cols) {
+        if (i < 0 || i >= rows || j < 0 || j >= cols)
+            return false;
+        return true;
+    }
+    
+    private void dfs(BoggleBoard board, int row, int col, String word, boolean[][] visited) {
+        int rows = board.rows();
+        int cols = board.cols();
+        if (row < 0 || col < 0 || row >= rows || col >= cols) {
+            return;
+        }
+        visited[row][col] = true;
+        if (trie.contains(word) && (!list.contains(word)) && word.length() > 2 && word != null) {
+            System.out.println(word);
+            list.add(word);
+        }
+        if (index(row + 1, col + 1, rows, cols) && !visited[row + 1][col + 1] && isValid(word)) {
+            String s = word + check(board.getLetter(row + 1, col + 1));
+            dfs(board, row + 1, col + 1, s, visited);
+            visited[row + 1][col + 1] = false;
+        }
+        if (index(row - 1, col - 1, rows, cols) && !visited[row - 1][col - 1] && isValid(word)) {
+            String s = word + check(board.getLetter(row - 1, col - 1));
+            dfs(board, row - 1, col - 1, s , visited);
+            visited[row - 1][col - 1] = false;
+        }
+        if (index(row - 1, col + 1, rows, cols) && !visited[row - 1][col + 1] && isValid(word)) {
+            String s = word + check(board.getLetter(row - 1, col + 1));
+            dfs(board, row - 1, col + 1, s, visited);
+            visited[row - 1][col + 1] = false;
+        }
+        if (index(row + 1, col - 1, rows, cols) && !visited[row + 1][col - 1] && isValid(word)) {
+            String s = word + check(board.getLetter(row + 1, col - 1));
+            dfs(board, row + 1, col - 1, s, visited);
+            visited[row + 1][col - 1] = false;
+        }
+        if (index(row - 1, col, rows, cols) && !visited[row - 1][col] && isValid(word)) {
+            String s = word + check(board.getLetter(row - 1, col));
+            dfs(board, row - 1, col, s, visited);
+            visited[row - 1][col] = false;
+        }
+        if (index(row + 1, col, rows, cols) && !visited[row + 1][col] && isValid(word)) {
+            String s = word + check(board.getLetter(row + 1, col));
+            dfs(board, row + 1, col, s, visited);
+            visited[row + 1][col] = false;
+        }
+        if (index(row, col + 1, rows, cols) && !visited[row][col + 1] && isValid(word)) {
+            String s = word + check(board.getLetter(row, col + 1));
+            dfs(board, row, col + 1, s, visited);
+            visited[row][col + 1] = false;
+        }
+        if (index(row, col - 1, rows, cols) && !visited[row][col - 1] && isValid(word)) {
+            String s = word + check(board.getLetter(row, col - 1));
+            dfs(board, row, col - 1, s, visited);
+            visited[row][col - 1] = false;
+        }
+    }
     // Returns the score of the given word if it is in the dictionary, zero otherwise.
     // (You can assume the word contains only the uppercase letters A through Z.)
     public int scoreOf(String word) {
-        if (ts.contains(word)) {
-            if (word.length() < 3)
-                return 0;
-            else if (word.length() >= 3 || word.length() < 4)
-                return 1;
-            else if (word.length() == 5)
-                return 2;
-            else if (word.length() == 6)
-                return 3;
-            else if (word.length() == 7)
-                return 5;
-            else if (word.length() >= 8)
-                return 11;
-        }
-        return 0;  
-    }
-
-    public static void main(String[] args) {
-        In in = new In(args[0]);
-        String[] dictionary = in.readAllStrings();
-        BoggleSolver solver = new BoggleSolver(dictionary);
-        BoggleBoard board = new BoggleBoard(args[1]);
-        int score = 0;
-        for (String word : solver.getAllValidWords(board)) {
-            System.out.println(word);
-            score += solver.scoreOf(word);
-        }
-        System.out.println("Score = " + score);
+        if (word == null) 
+            return 0;
+        Integer value = trie.get(word);
+        if (value == null)
+            return 0;
+        return value;
     }
 }

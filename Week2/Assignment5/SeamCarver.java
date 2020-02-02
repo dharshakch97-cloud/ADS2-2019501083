@@ -170,40 +170,49 @@ public class SeamCarver {
         }
     }
 
-    public void removeHorizantalSeam(int[] seam) {
-        if (seam == null || height() <= 1 || seam.length != width())
+       // remove horizontal seam from current picture
+   public void removeHorizontalSeam(int[] seam) {
+        if (seam == null || this.height() <= 1 || seam.length != this.width())
             throw new IllegalArgumentException();
 
-        Picture p = new Picture(width(), height() - 1);
+        Picture p = new Picture(this.width(), this.height() - 1);
         int pr_seam = seam[0];
-        for (int i = 0; i < width(); i++) {
+
+        for (int i = 0; i < this.width(); i++) {
             pr_seam = seam[i];
-            for (int j = 0;  j < height(); j++) {
-                Color c = picture.get(i, j);
+            for (int j = 0;  j < this.height(); j++) {
+                if (seam[i] == j) 
+                    continue;
+                Color c = this.picture.get(i, j);
                 if (seam[i] > j)
                     p.set(i, j, c);
                 else 
                     p.set(i, j - 1, c);
             }
         }
-        picture = p;
+        this.picture = p;
     }
 
+    // remove vertical seam from current picture
     public void removeVerticalSeam(int[] seam) {
-        if (seam == null || width() <= 1 || seam.length != height())
+        if (seam == null || this.width() <= 1 || seam.length != this.height())
             throw new IllegalArgumentException();
 
-        Picture p = new Picture(width() - 1, height());
+        Picture p = new Picture(this.width() - 1, this.height());
         int pr_seam = seam[0];
 
-        for (int i = 0; i < height(); i++) {
+        for (int i = 0; i < this.height(); i++) {
             pr_seam = seam[i];
-            for (j = 0; j < width(); j++) {
-                Color c = picture.get(x, y);
+            for (int j = 0; j < this.width(); j++) {
+                if (seam[i] == j)
+                    continue;
+                Color c = this.picture.get(j, i);
                 if (seam[i] > j)
                     p.set(j, i, c);
+                else
+                    p.set(j - 1, i, c);
             }
         }
-        picture = p;
-    } 
+        this.picture = p;
+    }
 }

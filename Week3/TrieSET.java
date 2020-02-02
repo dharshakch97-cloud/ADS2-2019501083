@@ -34,7 +34,7 @@ import java.util.Iterator;
  *  @author Robert Sedgewick
  *  @author Kevin Wayne
  */
-public class TrieSET implements Iterable<String> {
+public class TrieSET {
     private static final int R = 256;        // extended ASCII
 
     private Node root;      // root of trie
@@ -113,75 +113,6 @@ public class TrieSET implements Iterable<String> {
     }
 
     /**
-     * Returns all of the keys in the set, as an iterator.
-     * To iterate over all of the keys in a set named {@code set}, use the
-     * foreach notation: {@code for (Key key : set)}.
-     * @return an iterator to all of the keys in the set
-     */
-    public Iterator<String> iterator() {
-        return keysWithPrefix("").iterator();
-    }
-
-    /**
-     * Returns all of the keys in the set that start with {@code prefix}.
-     * @param prefix the prefix
-     * @return all of the keys in the set that start with {@code prefix},
-     *     as an iterable
-     */
-    public Iterable<String> keysWithPrefix(String prefix) {
-        Queue<String> results = new Queue<String>();
-        Node x = get(root, prefix, 0);
-        collect(x, new StringBuilder(prefix), results);
-        return results;
-    }
-
-    private void collect(Node x, StringBuilder prefix, Queue<String> results) {
-        if (x == null) return;
-        if (x.isString) results.enqueue(prefix.toString());
-        for (char c = 0; c < R; c++) {
-            prefix.append(c);
-            collect(x.next[c], prefix, results);
-            prefix.deleteCharAt(prefix.length() - 1);
-        }
-    }
-
-    /**
-     * Returns all of the keys in the set that match {@code pattern},
-     * where . symbol is treated as a wildcard character.
-     * @param pattern the pattern
-     * @return all of the keys in the set that match {@code pattern},
-     *     as an iterable, where . is treated as a wildcard character.
-     */  
-    public Iterable<String> keysThatMatch(String pattern) {
-        Queue<String> results = new Queue<String>();
-        StringBuilder prefix = new StringBuilder();
-        collect(root, prefix, pattern, results);
-        return results;
-    }
-        
-    private void collect(Node x, StringBuilder prefix, String pattern, Queue<String> results) {
-        if (x == null) return;
-        int d = prefix.length();
-        if (d == pattern.length() && x.isString)
-            results.enqueue(prefix.toString());
-        if (d == pattern.length())
-            return;
-        char c = pattern.charAt(d);
-        if (c == '.') {
-            for (char ch = 0; ch < R; ch++) {
-                prefix.append(ch);
-                collect(x.next[ch], prefix, pattern, results);
-                prefix.deleteCharAt(prefix.length() - 1);
-            }
-        }
-        else {
-            prefix.append(c);
-            collect(x.next[c], prefix, pattern, results);
-            prefix.deleteCharAt(prefix.length() - 1);
-        }
-    }
-
-    /**
      * Returns the string in the set that is the longest prefix of {@code query},
      * or {@code null}, if no such string.
      * @param query the query string
@@ -211,34 +142,5 @@ public class TrieSET implements Iterable<String> {
     public boolean hasPrefix(String w) {
         Node x = get(root, w, 0);
         return x != null;
-    }
-    
-    /**
-     * Removes the key from the set if the key is present.
-     * @param key the key
-     * @throws IllegalArgumentException if {@code key} is {@code null}
-     */
-    public void delete(String key) {
-        if (key == null) throw new IllegalArgumentException("argument to delete() is null");
-        root = delete(root, key, 0);
-    }
-
-    private Node delete(Node x, String key, int d) {
-        if (x == null) return null;
-        if (d == key.length()) {
-            if (x.isString) n--;
-            x.isString = false;
-        }
-        else {
-            char c = key.charAt(d);
-            x.next[c] = delete(x.next[c], key, d+1);
-        }
-
-        // remove subtrie rooted at x if it is completely empty
-        if (x.isString) return x;
-        for (int c = 0; c < R; c++)
-            if (x.next[c] != null)
-                return x;
-        return null;
     }
 }

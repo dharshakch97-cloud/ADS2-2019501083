@@ -1,7 +1,7 @@
 /******************************************************************************
  *  Compilation:  javac BoggleBoard.java
  *  Execution:    java  BoggleBoard
- *  Dependencies: StdRandom.java In.java System.out.java
+ *  Dependencies: StdRandom.java In.java StdOut.java
  *
  *  A data type for Boggle boards.
  *
@@ -191,18 +191,37 @@ public class BoggleBoard {
      * Unit tests the BoggleBoard data type.
      */
     public static void main(String[] args) {
-        In in = new In(args[0]);
-        String[] dictionary = in.readAllStrings();
-        BoggleSolver solver = new BoggleSolver(dictionary);
-        // BoggleBoard board = new BoggleBoard(args[1]);
-        // int score = 0;
-        // for (String word : solver.getAllValidWords(board)) {
-        //     System.out.println(word);
-        //     score += solver.scoreOf(word);
-        // }
-        // System.out.println("Score = " + score);
-        for (String word : dictionary) {
-            System.out.println(word);
-        }
+
+        // initialize a 4-by-4 board using Hasbro dice
+        System.out.println("Hasbro board:");
+        BoggleBoard board1 = new BoggleBoard();
+        System.out.println(board1);
+        System.out.println();
+
+        // initialize a 4-by-4 board using letter frequencies in English language
+        System.out.println("Random 4-by-4 board:");
+        BoggleBoard board2 = new BoggleBoard(4, 4);
+        System.out.println(board2);
+        System.out.println();
+
+        // initialize a 4-by-4 board from a 2d char array
+        System.out.println("4-by-4 board from 2D character array:");
+        char[][] a =  {
+            { 'D', 'O', 'T', 'Y' },
+            { 'T', 'R', 'S', 'F' },
+            { 'M', 'X', 'M', 'O' },
+            { 'Z', 'A', 'B', 'W' }
+        };
+        BoggleBoard board3 = new BoggleBoard(a);
+        System.out.println(board3);
+        System.out.println();
+
+        // initialize a 4-by-4 board from a file
+        String filename = "board-quinquevalencies.txt";
+        System.out.println("4-by-4 board from file " + filename + ":");
+        BoggleBoard board4 = new BoggleBoard(filename);
+        System.out.println(board4);
+        System.out.println();
     }
+    
 }
