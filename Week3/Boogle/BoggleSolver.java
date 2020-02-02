@@ -2,8 +2,8 @@ import java.util.ArrayList;
 public class BoggleSolver {
     // Initializes the data structure using the given array of strings as the dictionary.
     // (You can assume each word in the dictionary contains only the uppercase letters A through Z.)
-    TrieST<Integer> trie;
-    ArrayList<String> list;
+    private TrieST<Integer> trie;
+    private ArrayList<String> list;
     
     public BoggleSolver(String[] dictionary) {
         trie = new TrieST<Integer>();
@@ -106,18 +106,5 @@ public class BoggleSolver {
         if (value == null)
             return 0;
         return value;
-    }
-
-    public static void main(String[] args) {
-        In in = new In(args[0]);
-        String[] dictionary = in.readAllStrings();
-        BoggleSolver solver = new BoggleSolver(dictionary);
-        BoggleBoard board = new BoggleBoard(args[1]);
-        int score = 0;
-        for (String word : solver.getAllValidWords(board)) {
-            System.out.println(word);
-            score += solver.scoreOf(word);
-        }
-        System.out.println("Score = " + score);
     }
 }
