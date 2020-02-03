@@ -22,16 +22,16 @@ public class BoggleSolver {
 
         for (int i = 0; i < board.rows(); i++) {
             for (int j = 0; j < board.cols(); j++) {
-                boolean[][] marked = new boolean[board.rows()][board.cols()];
-                collect(board, i, j, marked, "", validWords);
+                boolean[][] checked = new boolean[board.rows()][board.cols()];
+                collect(board, i, j, checked, "", validWords);
             }
         }
 
         return validWords;
   }
 
-  private void collect(BoggleBoard board, int row, int col, boolean[][] marked, String prefix, SET<String> set) {
-    if (marked[row][col]) {
+  private void collect(BoggleBoard board, int row, int col, boolean[][] checked, String prefix, SET<String> set) {
+    if (checked[row][col]) {
       return;
     }
 
@@ -52,7 +52,7 @@ public class BoggleSolver {
       set.add(word);
     }
 
-    marked[row][col] = true;
+    checked[row][col] = true;
 
     for (int i = -1; i <= 1; i++) {
       for (int j = -1; j <= 1; j++) {
@@ -61,12 +61,12 @@ public class BoggleSolver {
         }
 
         if ((row + i >= 0) && (row + i < board.rows()) && (col + j >= 0) && (col + j < board.cols())) {
-          collect(board, row + i, col + j, marked, word, set);
+          collect(board, row + i, col + j, checked, word, set);
         }
       }
     }
 
-    marked[row][col] = false;
+    checked[row][col] = false;
   }
 
 
